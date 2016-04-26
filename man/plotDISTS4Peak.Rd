@@ -4,20 +4,22 @@
 \alias{plotDISTS4Peak}
 \title{plotDISTS4Peak}
 \usage{
-plotDISTS4Peak(MD, Peak.id, dist.method = "MMD", which.contrast = 1,
+plotDISTS4Peak(MD, Peak.id, dist.method = "MMD", whichContrast = 1,
   Zoom = TRUE, xlim = NULL, ylim = NULL, xlog10 = TRUE, title = NULL)
 }
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{Peak.id}{Peak id (coresponding to names of Regions(MD))}
+\item{Peak.id}{Peak id to specify which Peak to plot.
+(coresponding to names of Regions(MD))}
 
-\item{dist.method}{which method should be used to determine distances
+\item{dist.method}{specify method used for distances
 between samples. Currently only Maximum Mean Discrepancy (MMD)
 and Kolmogorov-Smirnov (KS) implemented.
 (DEFAULT: 'MMD')}
 
-\item{which.contrast}{(DEFAULT: 1)}
+\item{whichContrast}{index determining which of the set contrast should be used.
+(DEFAULT: 1)}
 
 \item{Zoom}{(DEFAULT: TRUE)}
 
@@ -35,7 +37,7 @@ showing all distances for one region
 \examples{
 dev.off()
 load(system.file("data/MMD.RData", package="MMDiff2"))
-plotDISTS4Peak(MMD,Peak.id = '6',dist.method='MMD', which.contrast=1)
+plotDISTS4Peak(MMD,Peak.id = '6',dist.method='MMD', whichContrast=1)
 
 }
 

@@ -40,52 +40,58 @@ BiocStyle::latex()
 \section{Introduction}
 
 ChIP-seq is the standard technique for determining genome-wide
-protein-DNA interactions. This is a crucial method for understanding
-gene regulation and epigenetics. A common example is performing
-ChIP-seq for a transcription factor to determine where on the genome
-the factor binds. The resulting ChIP-seq peaks are typically \textit{narrow}
-in their footprint and can be further queried for enriched motifs. Another
-example is the determination of chromatin states by profiling histone
+protein-DNA interactions and of particular importance for the fields
+of regulatory biology and epigenetics. A common use-case for ChIP-seq is
+determining where transcription factors bind on the genome.
+The resulting ChIP-seq peaks for transcription factors are
+typically \textit{narrow} and can be further queried for known DNA-binding motifs.
+Another example is ascertaining chromatin states by profiling histone
 modifications. Specific post-translational modification on histone proteins,
 represented as \textit{broad} peaks, are highly informative of the gene
-activity.
+activity and regulatory status.
 
 The utility and reproducibility of ChIP-seq led to its use in large-scale
 projects such as \textit{ENCODE} and \textit{Epigenomics Roadmap}.
 Thousands of ChIP-seq datasets were generated for various families
 of transcription factors and histone modifications in cell lines and
-primary tissues. These projects have described the regulatory
+primary tissues. These projects described the regulatory
 landscape through the lens of ChIP-seq experiments and also established
-a standard for comparisons with other experimental datasets.
+a standard for comparison with other experimental datasets.
 
 With an abundance of ChIP-seq data, there have also emerged many different
 computational tools for the analysis and statistical testing of ChIP-seq
 data between conditions, i\.e\., control cells against experimentally treated
-cells. ChIP-seq analysis begins with calling peaks between a sample conjugated
-with an antibody against a control with DNA input. Various computational
-tools exist for this task for example \textit{MACS2}. In an other scenario
+cells. After mapping reads to the genome, ChIP-seq analysis begins by calling
+peaks between a sample conjugated with an antibody against a
+control with DNA input. Various computational tools exist for this
+peak calling task but a popular tool is \textit{MACS2}. In another scenario,
 regions of interest are pre-defined with regard to other annotated objects,
 for example by applying windows around transcription start sites (TSS).
+In querying all of the TSS for possible ChIP-seq reads, experimentalists can
+observe the density of reads near regions of interest.
 
-After regions/peaks are identified, a common analysis is to determine regions
+After regions/peaks are identified, a common analysis is determining regions
 which are differentially bound by the studied transcription factor, or which
-show differential histone modifications. For simplicity, we will call these regions
-differential regions.  Often this is treated as a read-count based test, and some
-statistical packages such as \DESeq2 can be utilized for this task. ChIP-seq specific
-tools such as \DBA also integrate count-based testing in their methods.
+peaks demonstrate differential histone modifications between conditions.
+For simplicity, we will call these regions differential regions. Often this is
+treated as a read-count based test, and some statistical packages
+such as \DESeq2 can be utilized for this task. ChIP-seq specific tools
+such as \DBA also integrate count-based testing in their methods.
 
 A caveat of these methods is that count-based methods disregard higher order
 features of ChIP-seq reads such as peak shape. Between two conditions,
-read density may be insignificant but the distribution of reads within the
-peak may imply differential protein binding or the presence of protein
-complexes. Detection of these differential peak shapes is not possible when
-simplifying peaks to single values.
+differential read density may not be significant but the distribution of reads
+within the peak may imply differential protein binding or the presence of
+protein complexes. Detection of these differential peak shapes is not possible
+when simplifying peaks to single values, as is the case for the aforementioned
+read-count based tests.
 
 We therefore incorporate higher order ChIP-seq peak information into
-a testing for differential binding by adapting kernel-based
-statistical tests to ChIP-Seq data. In this update to \textit{MMDiff}, we
-improve code stability, decrease runtime and provide an interactive
-application for exploring peak profiles.
+a test for differential binding by adapting kernel-based
+statistical tests to ChIP-Seq data. This package was initially released as
+\textit{MMDiff}.
+
+In this current release, \textit{MMDiff2}, we improve code stability, decrease analysis runtime and provide an interactive Shiny application for exploring peak profiles.
 
 %ChIP-Seq has rapidly become the dominant experimental technique to
 %determine the location of transcription factor binding sites and
@@ -118,7 +124,7 @@ application for exploring peak profiles.
 
 library('MMDiff2')
 library('MMDiffBamSubset')
-ExperimentData <- list(genome='BSgenome.Mmusculus.UCSC.mm10',
+ExperimentData <- list(genome='BSgenome.Mmusculus.UCSC.mm9',
                        dataDir=system.file("extdata", package="MMDiffBamSubset"),
                        sampleSheet="Cfp1.csv")
 MetaData <- list('ExpData' = ExperimentData)
@@ -131,13 +137,15 @@ MMD <- compHists(MMD)
 MMD <- compDists(MMD)
 MMD <- setContrast(MMD,contrast='byCondition')
 MMD <- compPvals(MMD)
+res <- reportResults(MMD)
 @
 
 \section{Analysis Pipeline}
 
-\MD requires position sorted and indexed \texttt{BAM} files of the sample and input libraries and a set of regions in GRanges format, for example \texttt{MACS2} called peaks. For this
-vignette, we utilize the \texttt{MMDiffBamSubset} dataset that contains ChIP-seq
-peaks and reads from Clouaire et al., Genes \& Dev. 2012.
+\MD requires position sorted and indexed \texttt{BAM} files of the sample and
+input libraries and a set of regions in \texttt{GRanges} format, for example
+\texttt{MACS2} called peaks. For this vignette, we utilize the
+\texttt{MMDiffBamSubset} dataset that contains ChIP-seq peaks and reads from Clouaire \textit{et al.}, Genes \& Dev. 2012.
 
 <<setup,message=FALSE>>=
 
@@ -146,10 +154,10 @@ library('MMDiff2')
 @
 
 \subsection{Loading Data}
-We load the \texttt{MMDiffBamSubset} and specify an experimental genome, a
-directory containing peaks and reads, and a \textit{csv} file that details
+We load the \texttt{MMDiffBamSubset} data and specify an experimental genome
+(mm9), a directory containing peaks and reads, and a \textit{csv} file that details
 the paths to different samples. The \texttt{MetaData} object will be called
-upon later for adding in TB binding motif and gene annotation information.
+upon later for adding binding motif and gene annotation information.
 
 <<dataload,message=FALSE>>=
 # load data packages
@@ -168,7 +176,7 @@ MetaData <- list('ExpData' = ExperimentData)
 \subsection{Processing Peaks from BAM Files}
 A \texttt{GenomicRanges} object that summarizes the peaks has been provided
 in this vignette. After loading this file, we instantiate the \texttt{DBAmmd}
-class and read the BAM files for all peaks in all conditions.
+class and read the \texttt{BAM} files for all peaks in all conditions.
 
 <<regions,message=FALSE>>=
 
@@ -178,10 +186,19 @@ MMD <- setRegions(MMD,Peaks)
 MMD <- getPeakReads(MMD)
 @
 
-Note, that we are fetching the exact start and end positions of mapped fragments, not the coverage. In the case of single-end reads, the left most positions of fragments mapping to the positive strands are stored in a list called Left.p, and the right most positions of fragments mapping to the negative strands are stored in Right.n. For paired-end reads Right.p and Left.n are additionally kept.
+Note that we are fetching the exact start and end positions of mapped fragments
+and not the coverage. In the case of single-end reads, the left-most positions
+of fragments mapping to the positive strand are stored in a list called
+\texttt{Left.p}, and the right most positions of fragments mapping to the
+negative strand are stored in \texttt{Right.n}. For paired-end reads,
+\texttt{Right.p} and \texttt{Left.n} are additionally kept.
 
 The next step in the pipeline is to estimate the fragment centers using
-information from the forward and reverse strands. For paired-end reads, we can compute the exact Center position for each fragment, single-strand libraries we have to estimate the Centers. To improve on resolution, relative to coverage-based approach, we will go on using the (estimated) Center positions (see ref Gomes et al. Genome Research, 2014).
+information from the forward and reverse strands. For paired-end reads, we
+compute the exact Center position for each fragment. For single-strand
+libraries, we estimate the Centers. We improve the resolution of the estimated
+Center positions, relative to coverage-based approach, by utilizing the method
+described in Gomes \textit{et al.} Genome Research, 2014.
 %TODO: properly add refernce
 
 <<fragC, message=FALSE, markup='hide'>>=
@@ -189,7 +206,15 @@ MMD <- estimateFragmentCenters(MMD)
 @
 
 Once the fragment centers have been estimated, histograms for each peak
-are computed using the read information. The step is essential for plotting regions; it is not essential in order determine differentially shaped regions. Two parameters as used to compute histograms: \texttt{bin.length}, which determines the smoothing parameter over the set of reads (Default: 20) and the \\{whichPos}, which determines the fragment position from which histograms should be computed: 'Left.p': left ends of fragments mapping to positive strand, 'Right.n' right ends of fragments mapping to negative strands, 'Center': Fragment centers for all positions.
+are computed using the read information. The step is essential for plotting
+regions and not essential in order to determine differentially shaped regions.
+Two parameters as used to compute histograms:
+\texttt{bin.length}, which determines the smoothing parameter over the
+set of reads (Default: 20) and the \\{whichPos}, which determines the fragment
+position from which histograms should be computed: \texttt{'Left.p'} for
+left ends of fragments mapping to positive strand, \texttt{'Right.n'} for
+right ends of fragments mapping to negative strands and  \texttt{'Center'} for
+the Fragment centers for all positions (Default: \texttt{Center}).
 
 
 <<hists,message=FALSE>>=
@@ -219,7 +244,7 @@ Peaks can be visualized by providing a \texttt{Peak.id} parameter to the
 histograms from each of the samples.
 
 <<peakplot1, markup='hide', message=FALSE, fig.width=7, fig.height=3, fig.align='center' >>=
-plotPeak(MMD, Peak.id='6', plot.input = FALSE, whichPos="Center")
+plotPeak(MMD, Peak.id='241', plot.input = FALSE, whichPos="Center")
 @
 
 \subsubsection{Motif Enrichment within Peaks}
@@ -232,31 +257,32 @@ motifs <- query(query(MotifDb, 'Mmusculus'), 'E2F')
 @
 
 The query will return motifs that partially match the term "Pax", i\.e\., Pax4
-and Pax5 could be plotted. Integration of the motifs is seamless into
-\texttt{plotPeak}:
+and Pax5 could be plotted. Integration of the motifs is seamless into the
+\texttt{plotPeak} function:
 
 <<peakplot2,message=FALSE,fig.width=7, fig.height=4, fig.align='center'>>=
-plotPeak(MMD, Peak.id='6', NormMethod=NULL,plot.input = FALSE,whichPos="Center",
+plotPeak(MMD, Peak.id='241', NormMethod=NULL,plot.input = FALSE,whichPos="Center",
   Motifs=motifs,Motifcutoff="80%")
 @
 \subsubsection{Gene Annotation}
 
-In addition to plotting motifs of interest, gene annotations can also be
-plotted in a fully integrated plot with the ChIP-seq peak by providing
-a genomicRanges object to the \texttt{anno} parameter.
+In addition to plotting motifs of interest, we have enabled in \MD gene
+annotation tracks that can also be plotted in a fully integrated plot
+with the ChIP-seq peak by providing a \texttt{genomicRanges} object to
+the \texttt{anno} parameter.
 
 <<peakplot3,message=FALSE,fig.width=7, fig.height=5, fig.align='center'>>=
 data("mm9-Genes")
 names(GR) <- GR$tx_name
 GR <- list(UCSCKnownGenes = GR)
-plotPeak(MMD, Peak.id='6', NormMethod=NULL,plot.input = FALSE,
+plotPeak(MMD, Peak.id='241', NormMethod=NULL,plot.input = FALSE,
          whichPos="Center",Motifs=motifs, anno=GR)
 @
 
 \subsection{Computing per-region pair-wise distances between samples}
 The core of \MD is the comparison of peak shapes between samples. This is
-performed by using a kernel-based test that calculates a distance between
-treatment conditions and within conditions. The \texttt{compDists} function
+performed by using a kernel-based test that calculates 1) a distance between
+treatment conditions and 2) within conditions. The \texttt{compDists} function
 generates these per-region and pair-wise distances for all samples in the
 experiment.
 
@@ -293,12 +319,12 @@ MMD <- compPvals(MMD,dist.method='MMD')
 @
 
 The \texttt{plotDists} function plots a summary of all of the peak distances
-1. between groups and 2. within groups. Differentially shaped peaks
+1) between groups and 2) within groups. Significant differentially shaped peaks
 are highlighted in red.
 
 \subsection{Analyzing Results}
 <<>>=
-plotDists(MMD, dist.method='MMD',which.contrast=1,
+plotDists(MMD, dist.method='MMD',whichContrast=1,
                           diff.method='MMD.locfit',
                           bUsePval=FALSE, th=0.1,
                           title=NULL, what=3,
@@ -316,16 +342,16 @@ res <- reportResults(MMD)
 Peak.ids <- names(res)
 
 plotPeak(MMD, Peak.id=Peak.ids[1], NormMethod=NULL,plot.input = FALSE,
-         whichPos="Center",Motifs=motifs, anno=GR,which.contrast = 1)
+         whichPos="Center",Motifs=motifs, anno=GR,whichContrast = 1)
 dev.off()
 plotDISTS4Peak(MMD,Peak.id=Peak.ids[1],dist.method='MMD',
-               which.contrast=1,Zoom=TRUE)
+               whichContrast=1,Zoom=TRUE)
 
 @
 
 \subsection{Shiny Application Usage}
 
-\MD~ features an interactive Shiny application that displays
+\MD~features an interactive Shiny application that displays
 distances plots showing all peaks and in-depth peak plots.
 
 Beginning in the top panels of the Shiny application are two
@@ -341,8 +367,8 @@ The bottom left panel is a histogram representation of all conditions
 bottom right panel displays the distances between samples for that peak
 (\texttt{plotDISTS4peak}).
 
-Finally, a UCSC genome browser link is generated that matches the coordinates.
-of the selected peak.
+Finally, a UCSC genome browser link is generated that matches the coordinates
+of the selected peak for additional inspection.
 
 <<shinyApp,eval=FALSE>>=
 runShinyMMDiff2(MMD)
@@ -354,14 +380,13 @@ A demonstration of this is shown below.
 
 \section{Comparison with DiffBind}
 
-To compare against the \DBA~package, we downloaded aligned BAM files
-from the Ross-Innes \textit{et. al} 2012 paper and used the same called peaks
+To compare against the \DBA~package, we downloaded aligned \texttt{BAM} files
+from the Ross-Innes \textit{et al.} 2012 paper and used the same called peaks
 as analyzed in the \Biocpkg{DiffBind}~vignette.
 
 \section{Setup}
 
 This vignette was built using:
-
 <<>>=
 sessionInfo()
 @

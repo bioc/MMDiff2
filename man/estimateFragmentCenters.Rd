@@ -18,7 +18,7 @@ forward vs reverse strand and histograms of determined shifts
 (DEFAULT: FALSE)}
 }
 \value{
-DBAmmd object with updated slots
+DBAmmd object with updated slots \code{Reads} and \code{MetaData}.
 }
 \description{
 This function computes average shifts between

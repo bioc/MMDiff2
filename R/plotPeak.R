@@ -1,19 +1,22 @@
 #' plot Peak
 #'
-#' This function plots a peak
+#' This function plots histograms of fragment positions over a pre defined
+#' regions of interests / peaks. Can also show occurences of Sequence motifs and
+#' annotated objects (e.g. genes).
 #'
 #' @inheritParams getPeakReads
 #' @inheritParams DBAmmd-Accessors
-#' @param which.contrast (DEFAULT: 1)
-#' @param Peak.id Peak id (coresponding to names of Regions(MD))
-#' @param Sample.ids which samples to draw. IF NULL all samples are drawn.
+#' @param Peak.id Peak id to specify which Peak to plot.
+#' (coresponding to names of Regions(MD))
+#' @param Sample.ids which samples to draw. If NULL all samples are drawn.
 #' (DEFAULT: NULL)
-#' @param NormMethod wether to apply normailzation factors.
-#' currently no NormMetimplemented (DEFAULT: None)
-#' @param plot.input wether to plot input controls (DEFAULT: TRUE)
+#' @param NormMethod whether to apply normailzation factors.
+#' currently no normalization method implemented (DEFAULT: None)
+#' @param plot.input whether to plot input controls (DEFAULT: TRUE)
 #' @param Motifs TF binding sites (DEFAULT: NULL)
 #' @param Motifcutoff (Default: "80\%")
-#' @param anno (Default: NULL)
+#' @param anno either a GRanges objects containing annotated objects, e.g. genes,
+#' or a list of GRanges Objects. (Default: NULL)
 #' @param xaxt (Default: NULL)
 #' @param xlim (Default: NULL)
 #' @param ylim (Default: NULL)
@@ -24,19 +27,19 @@
 #' plotPeak(MMD,Peak.id='6',plot.input=FALSE)
 #'
 #' # add annotation (Overlapping genes)
-#' load(system.file("data/mm9-Genes.RData", package="MMDiff2"))
+#' data("mm9-Genes")
 #' GR <- list(UCSCKnownGenes = GR)
 #' plotPeak(MMD, Peak.id='6', plot.input = FALSE, anno=GR)
 #'
 #' # add TF binding sites
 #' library('MotifDb')
-#' plot_motifs <- query(query(MotifDb, 'Mmusculus'), 'E2F')
+#' motifs <- query(query(MotifDb, 'Mmusculus'), 'E2F')
 #' plotPeak(MMD, Peak.id='6', plot.input = FALSE,
-#'        Motifs=plot_motifs,Motifcutoff="80%")
+#'        Motifs=motifs,Motifcutoff="80%")
 #'
 #' # split peaks by contrast
-#' plotPeak(MMD, Peak.id='6', plot.input = FALSE, which.contrast=1,
-#'        Motifs=plot_motifs,Motifcutoff="80%",anno=GR)
+#' plotPeak(MMD, Peak.id='6', plot.input = FALSE, whichContrast=1,
+#'        Motifs=motifs,Motifcutoff="80%",anno=GR)
 #'
 #'
 #' @import BSgenome GenomicRanges Biostrings  S4Vectors
@@ -50,7 +53,7 @@
 
 plotPeak <- function(MD, Peak.id, Sample.ids=NULL,NormMethod=NULL,
                      plot.input=FALSE,whichPos="Center",
-                     which.contrast=NULL,
+                     whichContrast=NULL,
                      Motifs=NULL,
                      Motifcutoff="80%",
                      anno=NULL,
@@ -79,7 +82,7 @@ plotPeak <- function(MD, Peak.id, Sample.ids=NULL,NormMethod=NULL,
   if (is.null(Sample.ids))
     message("No Samples specified, plotting all samples")
 
-  if (is.null(which.contrast)){
+  if (is.null(whichContrast)){
     message("No Contrast specified, plotting all samples in one plot")
     add.contplot=0
   } else add.contplot=1
@@ -165,7 +168,7 @@ plotPeak <- function(MD, Peak.id, Sample.ids=NULL,NormMethod=NULL,
       Sample.ids <- samples$SampleID
       Sample.idx <- 1:length(Sample.ids)
     } else {
-      contrast <- MD@Contrasts[[which.contrast]]
+      contrast <- MD@Contrasts[[whichContrast]]
       Sample.ids <- names(which(contrast$group1))
       Sample.idx <- which(contrast$group1)
 

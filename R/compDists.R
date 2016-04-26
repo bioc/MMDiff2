@@ -12,7 +12,7 @@
 #' heuristically according to the method described in the MMDiff paper [1].
 #' (DEFUALT: NULL)
 #'
-#' @return DBAmmd object with updated slot Dists
+#' @return DBAmmd object with updated slot \code{Dists}
 #' @seealso \code{\link{DBAmmd}}, \code{\link{plotDists}},
 #' \code{\link{plotDISTS4Peak}}, \code{\link{compPvals}}
 #'

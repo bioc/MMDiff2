@@ -1,12 +1,12 @@
 #' Shiny Application for interactive visualization of MMD,GMD and
 #' Pearson Difference as well as plotting peaks
 #'
-#' @param MD DBAmmd object
-#' @param con (DEFAULT: NULL)
+#' @inheritParams DBAmmd-Accessors
+#' @inheritParams getPeakReads
 #'
 #' @examples
 #'  if(interactive()){
-#' load(system.file("data/MMD.RData", package="MMDiff2"))
+#'   data("MMD")
 #' runShinyMMDiff2(MMD)
 #'}
 #'
@@ -19,8 +19,8 @@
 #
 # David Kuo
 # March 2016
-runShinyMMDiff2 <- function(MD, con=NULL) {
+runShinyMMDiff2 <- function(MD, whichContrast=1) {
   shinyMMDiff2.app <- list(ui = ui.MMDiff2(MD),
-                           server = server.MMDiff2(MD, con))
+                           server = server.MMDiff2(MD, whichContrast))
   runApp(shinyMMDiff2.app)
 }

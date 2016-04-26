@@ -5,12 +5,13 @@
 \title{Shiny Application for interactive visualization of MMD,GMD and
 Pearson Difference as well as plotting peaks}
 \usage{
-runShinyMMDiff2(MD, con = NULL)
+runShinyMMDiff2(MD, whichContrast = 1)
 }
 \arguments{
-\item{MD}{DBAmmd object}
+\item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{con}{(DEFAULT: NULL)}
+\item{whichContrast}{index determining which of the set contrast should be used.
+(DEFAULT: 1)}
 }
 \description{
 Shiny Application for interactive visualization of MMD,GMD and
@@ -18,7 +19,7 @@ Pearson Difference as well as plotting peaks
 }
 \examples{
  if(interactive()){
-load(system.file("data/MMD.RData", package="MMDiff2"))
+  data("MMD")
 runShinyMMDiff2(MMD)
 }
 

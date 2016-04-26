@@ -9,15 +9,17 @@ compPvals(MD, dist.method = "MMD", diff.method = "MMD.locfit")
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{dist.method}{which method should be used to determine distances
+\item{dist.method}{specify method used for distances
 between samples. Currently only Maximum Mean Discrepancy (MMD)
 and Kolmogorov-Smirnov (KS) implemented.
 (DEFAULT: 'MMD')}
 
-\item{diff.method}{(DEFAULT: 'MMD.locfit')}
+\item{diff.method}{method used to determine p-values and false discovery rates.
+Currently only 'MMD.locfit' implemented.
+(DEFAULT: 'MMD.locfit')}
 }
 \value{
-DBAmmd object with updated Contrast Dists
+DBAmmd object with updated \code{Contrasts} slot.
 }
 \description{
 This function determines peak-specific p-values based on distances between
@@ -28,10 +30,13 @@ sample histograms.
 ## Example using a small data set provided with this package:
 
 data("MMD")
-MMD.1 <- compPvals(MMD)
+MMD.1 <- setContrast(MMD,contrast='byCondition')
+MMD.1 <- compPvals(MMD.1)
+reportResults(MMD.1)
 
 }
 \seealso{
-\code{\link{DBAmmd}}, \code{\link{plotDists}},\code{\link{compDists}}
+\code{\link{DBAmmd}},\code{\link{reportResults}},
+\code{\link{plotDists}},\code{\link{compDists}}
 }
 

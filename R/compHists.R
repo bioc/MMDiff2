@@ -1,24 +1,24 @@
 #' Compute Peak histograms
 #'
 #' This function computes histograms at pre-defined regions (peaks)
-#' from mapped fragments, e.i. fragment counts at genomic position. Note,
+#' from mapped fragments, i.e. fragment counts at genomic position. Note,
 #' in contrast to genomic coverage or density maps, this function uses a single
-#' position per fragment (usually it's center) rather than the whole extend of
-#' the fragment. The results in a significant increase in resolution.
+#' position per fragment (usually its center) rather than the whole extend of
+#' the fragment. This results in a significant increase in resolution.
 #' The parameter \code{whichPos} determines whether
 #' fragment centers, start or end positions should be considered
 #' ('Center','Left','Right').
-#' Results are stored as a list in the Hists slot of the DBAmmd Object,
-#' with one entry per peak. For each peak  a n x d matrix is generated,
-#' where n is the number of samples and d is the number of bins used to cover
-#' the extend of the peak. Note, d may vary between peaks.
+#' Results are stored as a list in the \code{Hists} slot of the DBAmmd Object,
+#' with one entry per peak. For each peak i, a (n x L_i) matrix is generated,
+#' where n is the number of samples and L_i is the number of bins used to cover
+#' the extend of the peak. Note, L_i varies between peaks of different lengths.
 #'
 #' @inheritParams getPeakReads
 #' @inheritParams DBAmmd-Accessors
 #' @param bin.length size of binning window (in bp)
 #' (DEFAULT: 20)
 #'
-#' @return DBAmmd object with updated slot Hists
+#' @return DBAmmd object with updated slot \code{Hists}
 #'
 #' @seealso \code{\link{DBAmmd}}, \code{\link{getPeakReads}},
 #' \code{\link{estimateFragmentCenters}}, \code{\link{plotPeak}},

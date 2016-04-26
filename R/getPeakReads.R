@@ -5,7 +5,7 @@
 #' end positions of mapped fragments, not the coverage. In the case of
 #' single-end reads, the left most postions of fragments mapping to the positive
 #' strands and the right most positions of fragments
-#' mapping to the negative strands are stored. To find center of fragments use
+#' mapping to the negative strands are stored. To find centers of fragments use
 #' \code{estimateFragmentCenters()}. Positions are given relative to the start
 #' of the peak. Also computed are TotalCounts, i.e. number of fragments mapping to a peak
 #' region, as well as number of fragments mapping to forward and reverse strand.

@@ -11,7 +11,7 @@
 #' forward vs reverse strand and histograms of determined shifts
 #' (DEFAULT: FALSE)
 #'
-#' @return DBAmmd object with updated slots
+#' @return DBAmmd object with updated slots \code{Reads} and \code{MetaData}.
 #'
 #' @examples
 #'

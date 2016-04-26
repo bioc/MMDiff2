@@ -4,17 +4,23 @@
 #' sample histograms.
 #'
 #' @inheritParams compDists
-#' @param diff.method (DEFAULT: 'MMD.locfit')
-#' @return DBAmmd object with updated Contrast Dists
+#' @param diff.method method used to determine p-values and false discovery rates.
+#' Currently only 'MMD.locfit' implemented.
+#' (DEFAULT: 'MMD.locfit')
+#'
+#' @return DBAmmd object with updated \code{Contrasts} slot.
 #'
 #' @examples
 #'
 #' ## Example using a small data set provided with this package:
 #'
 #' data("MMD")
-#' MMD.1 <- compPvals(MMD)
+#' MMD.1 <- setContrast(MMD,contrast='byCondition')
+#' MMD.1 <- compPvals(MMD.1)
+#' reportResults(MMD.1)
 #'
-#' @seealso \code{\link{DBAmmd}}, \code{\link{plotDists}},\code{\link{compDists}}
+#' @seealso \code{\link{DBAmmd}},\code{\link{reportResults}},
+#' \code{\link{plotDists}},\code{\link{compDists}}
 #'
 #'
 #' @import Biobase locfit
@@ -115,10 +121,11 @@ compute.pvalues <- function(Counts, MMD, group1.ids, group2.ids, bw.group.ids ){
 
 
     fit.Group1 <- locfit.robust(D ~ N, data=data)
-    disp <- abs(data$D - predict(fit.Group1,data$N))
+    disp <- data$D - predict(fit.Group1,data$N)
     #fit.Group1 <- lm(D ~ 1/N, data=data)
     #disp <- abs(data$D - predict.lm(fit.Group1,data))
     data <- cbind(data,disp = disp)
+    data <- data[disp>0,]
     fit.disp.Group1 <- locfit.robust(disp ~ N, data=data)
     #fit.disp.Group1 <- lm(disp ~ 1/(10^N), data=data)
     #yy=predict.lm(fit.disp.Group1,data)
@@ -140,10 +147,11 @@ compute.pvalues <- function(Counts, MMD, group1.ids, group2.ids, bw.group.ids ){
                       D = rowMeans(as.matrix(M[, group2.ids])))
 
     fit.Group2 <- locfit.robust(D ~ N, data=data)
-    disp <- abs(data$D - predict(fit.Group2,  data$N))
+    disp <- data$D - predict(fit.Group2,  data$N)
     #fit.Group2 <- lm(D ~ 1/N, data=data)
     #disp <- abs(data$D - predict.lm(fit.Group2,  data))
     data <- cbind(data,disp = disp)
+    data <- data[disp>0,]
     fit.disp.Group2 <- locfit.robust(disp ~ N, data=data)
 
     group2 = detpvals(MMD,Counts,fit.Group2,fit.disp.Group2,group2.ids)
@@ -205,13 +213,13 @@ detpvals <- function(M,C,fit,fit.disp,which.comps){
   #K <- s$df[2]
   N <- summary(fit)$n
   K <- fit$dp['df2']
-  RSDR <- quantile(abs(residuals(fit)),.6827)*N/(N-K)
+  #RSDR <- quantile(abs(residuals(fit)),.6827)*N/(N-K)
   for (i in 1:length(which.comps)) {
     pred.y <- predict(fit,C[,which.comps[i]])
     #pred.y <- predict.lm(fit,data.frame(N=C[,which.comps[i]]))
     Dist <- M[,which.comps[i]]-pred.y
     DR <- predict(fit.disp,C[,which.comps[i]])
-    t1 <- Dist/RSDR
+    #t1 <- Dist/RSDR
     t2 <- Dist/DR
     p[,i] <- pt(t2,df=N-K,lower.tail = FALSE)
   }

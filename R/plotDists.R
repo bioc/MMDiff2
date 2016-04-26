@@ -9,9 +9,8 @@
 #' @param which.group2 subset samples from group2 (DEFAULT: NULL)
 #' @param diff.method which method to use to determine significant peaks
 #' (DEFAULT: 'MMD.locfit')
-#' @param bUsePval if TRUE highlight significant peaks according to their
-#' p-values, else use FDR (DEFAULT: FALSE)
-#' @param th significance threshold to highlight peaks (DEFAULT: 0.1)
+#' @param bUsePval if TRUE p-values instead of FDRs are used (DEFAULT: FALSE)
+#' @param th significance threshold for differential called peaks (DEFAULT: 0.1)
 #' @param title an overall title for the plot (DEFAULT: NULL)
 #' @param what which dists to overlay: 1: only between group distances,
 #' 2: between and within group distances, 3: between and within group distances,
@@ -25,13 +24,13 @@
 #'
 #' @examples
 #' data("MMD")
-#' plotDists(MMD, which.contrast=1)
+#' plotDists(MMD, whichContrast=1)
 #'
 #' @export
 #
 plotDists <- function(MD,
                       dist.method='MMD',
-                      which.contrast=1,
+                      whichContrast=1,
                       which.group1=NULL,
                       which.group2=NULL,
                       diff.method='MMD.locfit',
@@ -47,7 +46,7 @@ plotDists <- function(MD,
                       shiny_df_opt=FALSE){
 
   samples <- Samples(MD)
-  Contrast <- MD@Contrasts[[which.contrast]]
+  Contrast <- MD@Contrasts[[whichContrast]]
 
   DISTs <- Dists(MD,dist.method)
   mCounts <- MD@mCounts
@@ -222,6 +221,8 @@ plotDists <- function(MD,
   grid()
 
   if (shiny_df_opt == TRUE) {
+    rownames(within_df) <- paste('W-',names(Regions(MD)),sep='')
+    rownames(between_df) <- paste('B-',names(Regions(MD)),sep='')
     out_df <- rbind(within_df, between_df)
     colnames(out_df) <- c("means","distance","condition","sig")
     return(out_df)

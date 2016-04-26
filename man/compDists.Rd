@@ -9,7 +9,7 @@ compDists(MD, dist.method = "MMD", sigma = NULL, run.parallel = TRUE)
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{dist.method}{which method should be used to determine distances
+\item{dist.method}{specify method used for distances
 between samples. Currently only Maximum Mean Discrepancy (MMD)
 and Kolmogorov-Smirnov (KS) implemented.
 (DEFAULT: 'MMD')}
@@ -25,7 +25,7 @@ heuristically according to the method described in the MMDiff paper [1].
 (DEFAULT: FALSE)}
 }
 \value{
-DBAmmd object with updated slot Dists
+DBAmmd object with updated slot \code{Dists}
 }
 \description{
 This function computes pairwise distances between histograms

@@ -1,32 +1,31 @@
 #' Extract data from DBAmmd objects
 #'
 #' This help file describes different ways to access the slots and values
-#' contained in \code{\link{DBAmmd}} objects.
+#' contained in a \code{\link{DBAmmd-class}} objects.
 #'
-#' @param x a DBAmmd Object. This Object can be created using \code{DBAmmd()}.
-#' As MetaData it needs to contain the path to the data directory and the
-#' name of a sampleSheet csv file. Additionally, the Regions of interests must
-#' be provided as GRanges Object.
+#' @param x a DBAmmd Object. An empty instance can be created using \code{DBAmmd()}.
+#' (See \code{\link{DBAmmd-class}} for more details.)
 #' @param whichPos specifies which relative positions of mapped fragments
 #' should to be considered.
-#' Can be one of: 'Left.p', 'Right.p': Start and end positions of fragments
-#' mapping to positive strand, respectively.
-#' ('Right.p' is not available for single-end reads)
-#' 'Left.n','Right.n': Start and end positions of fragments
-#' mapping to negative strand, respectively.
-#' ('Left.n' is not available for single-end reads)
+#' Can be one of: 'Left.p', 'Right.p', 'Right.p' and 'Left.n':
+#' Start and end positions of fragments mapping to positive or negative strand,
+#' respectively ('Right.p' and 'Left.n' are not available for single-end reads).
 #' Additionally inferred positions: 'Center.n','Center.p','Center','Left','Right'.
+#' (DEFAULT: 'Center')
 #' @param whichCounts can be 'T': total counts, or
-#' 'p','n': counts of reads mapping to positive, negative strand, respectively
-#' @param dist.method which method should be used to determine distances
+#' 'p','n': counts of reads mapping to positive, negative strand, respectively.
+#' @param dist.method specify method used for distances
 #' between samples. Currently only Maximum Mean Discrepancy (MMD)
 #' and Kolmogorov-Smirnov (KS) implemented.
 #' (DEFAULT: 'MMD')
-#' @param whichContrast (DEFAULT: 1)
-#' @param Regions GRanges Object
-#' @param contrast how to set contrast, either 'byCondition', or 'byTissue'.
-#' contrast can also be manually set (see vignette for details.)
+#' @param whichContrast index determining which of the set contrast should be used.
+#' (DEFAULT: 1)
+#' @param Regions GRanges Object specifying the Regions of Interesst / Peaks.
+#' @param contrast determines how to set a new contrast for differential analysis.
+#' A contrast can be automatically created either 'byCondition', or 'byTissue'.
+#' The Contrast can also be manually set (see vignette for details).
 #'
+#' @seealso \code{\link{DBAmmd-class}}
 #' @examples
 #' data("MMD")
 #'
@@ -36,9 +35,9 @@
 #' numSamples(MMD)
 #' metaData(MMD)
 #' R <- Regions(MMD)
-#' Pos <- Reads(MMD, whichPos='Center')
+#' Pos <- Reads(MMD)
 #' C <- Counts(MMD)
-#' H <- Hists(MMD, whichPos='Center')
+#' H <- Hists(MMD)
 #' D <- Dists(MMD)
 #' C1 <- Contrast(MMD)
 #'
@@ -47,33 +46,39 @@
 #' @include DBAmmd-Class.R AllGenerics.R
 NULL
 
-#' @return \code{Genome(x)} returns
+#' @return \code{Genome(x)} returns the name of the used genome version, if set
+#' in the metaData.
 #' @rdname DBAmmd-Accessors
 setMethod("Genome", "DBAmmd", function(x) x@MetaData$ExpData$genome)
 
-#' @return \code{Samples(x)} returns
+#' @return \code{Samples(x)} returns the information which was provided in the
+#' SampleSheet.csv to describe the data.
 #' @rdname DBAmmd-Accessors
 setMethod("Samples", "DBAmmd",function(x) x@MetaData$ExpData$samples)
 
-#' @return \code{numPeaks(x)} returns
+#' @return \code{numPeaks(x)} returns the number of Peaks / Regions of Interest
+#' that are associated with the DBAmmd object.
 #' @rdname DBAmmd-Accessors
 setMethod("numPeaks", "DBAmmd",function(x) length(x@rowRanges))
 
-#' @return \code{numSamples(x)} returns
+#' @return \code{numSamples(x)} returns the number of samples associated with the
+#' DBAmmd object.
 #' @rdname DBAmmd-Accessors
 setMethod("numSamples", "DBAmmd",function(x) dim(Samples(x))[1])
 
-#' @return \code{metaData(x)} returns
+#' @return \code{metaData(x)} returns the metaData associated with the
+#' DBAmmd object.
 #' @rdname DBAmmd-Accessors
 setMethod("metaData", "DBAmmd",function(x) x@MetaData)
 
-#' @return \code{Regions(x)} returns
+#' @return \code{Regions(x)} returns the Peaks / Regions of Interest that are
+#' associated with the DBAmmd object.
 #' @rdname DBAmmd-Accessors
 setMethod("Regions", "DBAmmd", function(x) x@rowRanges)
 
-#' @return \code{Reads(x,whichPos)} returns
+#' @return \code{Reads(x,whichPos)} returns the Reads mapping to the Regions of Interest.
 #' @rdname DBAmmd-Accessors
-setMethod("Reads", "DBAmmd", function(x,whichPos=NULL){
+setMethod("Reads", "DBAmmd", function(x,whichPos='Center'){
   reads=x@Reads
 
   VALs=c('Left.p','Right.n','Left.n','Right.p','Center.n','Center.p',
@@ -87,7 +92,11 @@ setMethod("Reads", "DBAmmd", function(x,whichPos=NULL){
   return(R)
 })
 
-#' @return \code{Counts(x,whichCounts)} returns
+#' @return \code{Counts(x,whichCounts)} returns a m x n matrix containing the
+#' Counts of Reads mapping to the Peaks / Regions of Interest.
+#' Depending on the value of 'whichCounts', total counts ('T'),
+#' or counts of reads mapping to positive ('p'), or negative strand ('n')
+#' are returnt. See \code{\link{getPeakReads}} for more details.
 #' @rdname DBAmmd-Accessors
 setMethod("Counts", "DBAmmd", function(x,whichCounts='T') {
   if (whichCounts=='T') x@RawTotalCounts
@@ -98,9 +107,13 @@ setMethod("Counts", "DBAmmd", function(x,whichCounts='T') {
          'p': positive strand,'n': negative strand")
 })
 
-#' @return \code{Hists(x,whichPos)} returns
+#' @return \code{Hists(x,whichPos)} returns a list of matrices of length m
+#' (number of Peaks). Each matrix is a n x L_i matrix, where n is the number of
+#' samples and L_i is the number of bins used to cover
+#' the extend of the peak. Note, L_i varies between peaks of different lengths.
+#' See \code{\link{compHists}} for more details.
 #' @rdname DBAmmd-Accessors
-setMethod("Hists", "DBAmmd", function(x,whichPos){
+setMethod("Hists", "DBAmmd", function(x,whichPos='Center'){
   hists=x@Hists
   VALs=c('Left.p','Right.n','Left.n','Right.p','Center.n','Center.p',
          'Center','Left','Right')
@@ -114,7 +127,9 @@ setMethod("Hists", "DBAmmd", function(x,whichPos){
 }
 )
 
-#' @return \code{Dists(x,dist.method)} returns
+#' @return \code{Dists(x,dist.method)} returns a matrix containing distances
+#' between pairs of samples for each peak. See \code{\link{compDists}} for
+#' more details.
 #' @rdname DBAmmd-Accessors
 setMethod("Dists", "DBAmmd", function(x,dist.method=NULL) {
   D <- x@DISTs
@@ -123,7 +138,7 @@ setMethod("Dists", "DBAmmd", function(x,dist.method=NULL) {
   return(d)
 })
 
-#' @return \code{Contrast(x,whichContrast)} returns
+#' @return \code{Contrast(x,whichContrast)} returns the specified contrast.
 #' @rdname DBAmmd-Accessors
 setMethod("Contrast", "DBAmmd", function(x,whichContrast=1)
   x@Contrasts[whichContrast])
@@ -131,7 +146,8 @@ setMethod("Contrast", "DBAmmd", function(x,whichContrast=1)
 
 ###SLOT SETTERs
 
-#' @return \code{setRegions(x,Regions)} returns a DBAmmd Object with Regions set
+#' @return \code{setRegions(x,Regions)} returns a DBAmmd Object with set
+#' Peaks / Regions of Interests.
 #' @rdname DBAmmd-Accessors
 setMethod("setRegions", "DBAmmd", function(x,Regions) {
   if (length(x@rowRanges)>0)
@@ -141,7 +157,7 @@ setMethod("setRegions", "DBAmmd", function(x,Regions) {
   return(x)})
 
 #' @return \code{setContrast(x,contrast)} returns a DBAmmd Object
-#' with a contrast set
+#' with a set contrast.
 #' @rdname DBAmmd-Accessors
 setMethod("setContrast", "DBAmmd", function(x,contrast) {
   if (contrast=='byCondition' | contrast=='byTissue'){

@@ -43,10 +43,8 @@ setRegions(x, ...)
 setContrast(x, ...)
 }
 \arguments{
-\item{x}{a DBAmmd Object. This Object can be created using \code{DBAmmd()}.
-As MetaData it needs to contain the path to the data directory and the
-name of a sampleSheet csv file. Additionally, the Regions of interests must
-be provided as GRanges Object.}
+\item{x}{a DBAmmd Object. An empty instance can be created using \code{DBAmmd()}.
+(See \code{\link{DBAmmd-class}} for more details.)}
 
 \item{...}{additional parameters}
 }

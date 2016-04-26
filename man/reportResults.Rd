@@ -2,27 +2,30 @@
 % Please edit documentation in R/reportResults.R
 \name{reportResults}
 \alias{reportResults}
-\title{reportResults}
+\title{report results}
 \usage{
-reportResults(MD, diff.method = "MMD.locfit", th = 0.1,
-  which.contrast = 1, rm.oulier = TRUE, bUsePval = FALSE)
+reportResults(MD, diff.method = "MMD.locfit", th = 0.1, whichContrast = 1,
+  rm.oulier = TRUE, bUsePval = FALSE)
 }
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{diff.method}{(DEFAULT: 'MMD.locfit')}
+\item{diff.method}{method used to determine p-values and false discovery rates.
+Currently only 'MMD.locfit' implemented.
+(DEFAULT: 'MMD.locfit')}
 
-\item{th}{significance threshold to highlight peaks (DEFAULT: 0.1)}
+\item{th}{significance threshold for differential called peaks (DEFAULT: 0.1)}
 
-\item{which.contrast}{(DEFAULT: 1)}
+\item{whichContrast}{index determining which of the set contrast should be used.
+(DEFAULT: 1)}
 
-\item{rm.oulier}{(DEFAULT: TRUE)}
+\item{rm.oulier}{if TRUE, significant peaks with high
+within-group distances are not reported. (DEFAULT: TRUE)}
 
-\item{bUsePval}{if TRUE highlight significant peaks according to their
-p-values, else use FDR (DEFAULT: FALSE)}
+\item{bUsePval}{if TRUE p-values instead of FDRs are used (DEFAULT: FALSE)}
 }
 \description{
-retrieve Results of differential binding analysis
+retrieve results of differential binding analysis
 }
 \examples{
 

@@ -5,40 +5,41 @@
 \title{plot Peak}
 \usage{
 plotPeak(MD, Peak.id, Sample.ids = NULL, NormMethod = NULL,
-  plot.input = FALSE, whichPos = "Center", which.contrast = NULL,
+  plot.input = FALSE, whichPos = "Center", whichContrast = NULL,
   Motifs = NULL, Motifcutoff = "80\%", anno = NULL, xaxt = NULL,
   xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{Peak.id}{Peak id (coresponding to names of Regions(MD))}
+\item{Peak.id}{Peak id to specify which Peak to plot.
+(coresponding to names of Regions(MD))}
 
-\item{Sample.ids}{which samples to draw. IF NULL all samples are drawn.
+\item{Sample.ids}{which samples to draw. If NULL all samples are drawn.
 (DEFAULT: NULL)}
 
-\item{NormMethod}{wether to apply normailzation factors.
-currently no NormMetimplemented (DEFAULT: None)}
+\item{NormMethod}{whether to apply normailzation factors.
+currently no normalization method implemented (DEFAULT: None)}
 
-\item{plot.input}{wether to plot input controls (DEFAULT: TRUE)}
+\item{plot.input}{whether to plot input controls (DEFAULT: TRUE)}
 
 \item{whichPos}{specifies which relative positions of mapped fragments
 should to be considered.
-Can be one of: 'Left.p', 'Right.p': Start and end positions of fragments
-mapping to positive strand, respectively.
-('Right.p' is not available for single-end reads)
-'Left.n','Right.n': Start and end positions of fragments
-mapping to negative strand, respectively.
-('Left.n' is not available for single-end reads)
-Additionally inferred positions: 'Center.n','Center.p','Center','Left','Right'.}
+Can be one of: 'Left.p', 'Right.p', 'Right.p' and 'Left.n':
+Start and end positions of fragments mapping to positive or negative strand,
+respectively ('Right.p' and 'Left.n' are not available for single-end reads).
+Additionally inferred positions: 'Center.n','Center.p','Center','Left','Right'.
+(DEFAULT: 'Center')}
 
-\item{which.contrast}{(DEFAULT: 1)}
+\item{whichContrast}{index determining which of the set contrast should be used.
+(DEFAULT: 1)}
 
 \item{Motifs}{TF binding sites (DEFAULT: NULL)}
 
 \item{Motifcutoff}{(Default: "80\%")}
 
-\item{anno}{(Default: NULL)}
+\item{anno}{either a GRanges objects containing annotated objects, e.g. genes,
+or a list of GRanges Objects. (Default: NULL)}
 
 \item{xaxt}{(Default: NULL)}
 
@@ -47,7 +48,9 @@ Additionally inferred positions: 'Center.n','Center.p','Center','Left','Right'.}
 \item{ylim}{(Default: NULL)}
 }
 \description{
-This function plots a peak
+This function plots histograms of fragment positions over a pre defined
+regions of interests / peaks. Can also show occurences of Sequence motifs and
+annotated objects (e.g. genes).
 }
 \examples{
 dev.off()
@@ -55,19 +58,19 @@ data("MMD")
 plotPeak(MMD,Peak.id='6',plot.input=FALSE)
 
 # add annotation (Overlapping genes)
-load(system.file("data/mm9-Genes.RData", package="MMDiff2"))
+data("mm9-Genes")
 GR <- list(UCSCKnownGenes = GR)
 plotPeak(MMD, Peak.id='6', plot.input = FALSE, anno=GR)
 
 # add TF binding sites
 library('MotifDb')
-plot_motifs <- query(query(MotifDb, 'Mmusculus'), 'E2F')
+motifs <- query(query(MotifDb, 'Mmusculus'), 'E2F')
 plotPeak(MMD, Peak.id='6', plot.input = FALSE,
-       Motifs=plot_motifs,Motifcutoff="80\%")
+       Motifs=motifs,Motifcutoff="80\%")
 
 # split peaks by contrast
-plotPeak(MMD, Peak.id='6', plot.input = FALSE, which.contrast=1,
-       Motifs=plot_motifs,Motifcutoff="80\%",anno=GR)
+plotPeak(MMD, Peak.id='6', plot.input = FALSE, whichContrast=1,
+       Motifs=motifs,Motifcutoff="80\%",anno=GR)
 
 
 }

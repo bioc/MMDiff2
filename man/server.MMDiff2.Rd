@@ -5,12 +5,13 @@
 \title{Shiny server code for interactive visualization of MMD distances,
 peak plots, and MMD distances by sample.}
 \usage{
-server.MMDiff2(MD, which.contrast = NULL)
+server.MMDiff2(MD, whichContrast = 1)
 }
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{which.contrast}{(DEFAULT: 1)}
+\item{whichContrast}{index determining which of the set contrast should be used.
+(DEFAULT: 1)}
 }
 \description{
 Shiny server code for interactive visualization of MMD distances,

@@ -1,30 +1,59 @@
 Package: MMDiff2
-Description: This package detects statistically significant differences
-        between read enrichment profiles in different ChIP-Seq samples.
-        To take advantage of shape differences it uses Kernel methods
-        (Maximum Mean Discrepancy, MMD).
+Description: This package detects statistically significant differences between
+    read enrichment profiles in different ChIP-Seq samples. To take advantage of
+    shape differences it uses Kernel methods (Maximum Mean Discrepancy, MMD).
 Type: Package
 Title: Statistical Testing for ChIP-Seq data sets
-Version: 0.99.11
-Authors@R: c( person("Gabriele", "Schweikert", role = c("cre", "aut"),
-        email = "gschweik@staffmail.ed.ac.uk"), person("David", "Kuo",
-        role = "aut", email = "dkuo@cbio.mskcc.org"))
-Depends: R (>= 3.3), Rsamtools, Biobase,
+Version: 0.99.12
+Authors@R: c(
+    person("Gabriele", "Schweikert", role = c("cre", "aut"), email = "gschweik@staffmail.ed.ac.uk"),
+    person("David", "Kuo", role = "aut", email = "dkuo@cbio.mskcc.org"))
+Depends:
+    R (>= 3.3),
+    Rsamtools,
+    Biobase,
 biocViews: ChIPSeq, DifferentialPeakCalling, Sequencing, Software
 License: Artistic-2.0
-Imports: GenomicRanges, locfit, BSgenome, Biostrings, shiny, ggplot2,
-        RColorBrewer, graphics, grDevices, parallel, S4Vectors, methods
+Imports:
+    GenomicRanges,
+    locfit,
+    BSgenome,
+    Biostrings,
+    shiny,
+    ggplot2,
+    RColorBrewer,
+    graphics,
+    grDevices,
+    parallel,
+    S4Vectors,
+    methods
 ImportFrom: utils txtProgressBar setTxtProgressBar read.csv
-Suggests: MMDiffBamSubset, MotifDb, knitr, BiocStyle,
-        BSgenome.Mmusculus.UCSC.mm9
+Suggests:
+    MMDiffBamSubset,
+    MotifDb,
+    knitr,
+    BiocStyle,
+    BSgenome.Mmusculus.UCSC.mm9
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
-Collate: 'DBAmmd-Class.R' 'AllGenerics.R' 'DBAmmd-Accessors.R'
-        'DBAmmd-Showmethods.R' 'DBAmmd-internal.R' 'MMDiff2_data.R'
-        'compDists.R' 'compHists.R' 'compPvals.R' 'createPeakMatrix.R'
-        'estimateFragmentCenters.R' 'getPeakReads.R' 'helperFcts.R'
-        'plotDISTS4Peak.R' 'plotDists.R' 'plotPeak.R' 'reportResults.R'
-        'runShinyMMDiff2.R' 'server.R' 'ui.R'
-NeedsCompilation: no
-Author: Gabriele Schweikert [cre, aut], David Kuo [aut]
-Maintainer: Gabriele Schweikert <gschweik@staffmail.ed.ac.uk>
+Collate:
+    'DBAmmd-Class.R'
+    'AllGenerics.R'
+    'DBAmmd-Accessors.R'
+    'DBAmmd-Showmethods.R'
+    'DBAmmd-internal.R'
+    'MMDiff2_data.R'
+    'compDists.R'
+    'compHists.R'
+    'compPvals.R'
+    'createPeakMatrix.R'
+    'estimateFragmentCenters.R'
+    'getPeakReads.R'
+    'helperFcts.R'
+    'plotDISTS4Peak.R'
+    'plotDists.R'
+    'plotPeak.R'
+    'reportResults.R'
+    'runShinyMMDiff2.R'
+    'server.R'
+    'ui.R'

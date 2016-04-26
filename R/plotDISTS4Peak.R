@@ -12,18 +12,18 @@
 #' @examples
 #' dev.off()
 #' load(system.file("data/MMD.RData", package="MMDiff2"))
-#' plotDISTS4Peak(MMD,Peak.id = '6',dist.method='MMD', which.contrast=1)
+#' plotDISTS4Peak(MMD,Peak.id = '6',dist.method='MMD', whichContrast=1)
 #'
 #' @export
 #
-plotDISTS4Peak <- function(MD,Peak.id,dist.method='MMD',which.contrast=1,
+plotDISTS4Peak <- function(MD,Peak.id,dist.method='MMD',whichContrast=1,
                            Zoom=TRUE,xlim=NULL,ylim=NULL,xlog10=TRUE,title=NULL){
 
 
   Peak.idx <- match(Peak.id, names(Regions(MD)))
 
   samples <- Samples(MD)
-  Contrast <- MD@Contrasts[[which.contrast]]
+  Contrast <- MD@Contrasts[[whichContrast]]
   group1 <- names(which(Contrast$group1))
   group2 <- names(which(Contrast$group2))
 

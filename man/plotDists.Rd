@@ -4,21 +4,22 @@
 \alias{plotDists}
 \title{plotDists}
 \usage{
-plotDists(MD, dist.method = "MMD", which.contrast = 1,
-  which.group1 = NULL, which.group2 = NULL, diff.method = "MMD.locfit",
-  bUsePval = FALSE, th = 0.1, title = NULL, what = 3, xlim = NULL,
-  ylim = NULL, xlog10 = TRUE, Peak.IDs = NULL, withLegend = TRUE,
+plotDists(MD, dist.method = "MMD", whichContrast = 1, which.group1 = NULL,
+  which.group2 = NULL, diff.method = "MMD.locfit", bUsePval = FALSE,
+  th = 0.1, title = NULL, what = 3, xlim = NULL, ylim = NULL,
+  xlog10 = TRUE, Peak.IDs = NULL, withLegend = TRUE,
   shiny_df_opt = FALSE)
 }
 \arguments{
 \item{MD}{DBAmmd Object. This Object can be created using \code{DBAmmd()}.}
 
-\item{dist.method}{which method should be used to determine distances
+\item{dist.method}{specify method used for distances
 between samples. Currently only Maximum Mean Discrepancy (MMD)
 and Kolmogorov-Smirnov (KS) implemented.
 (DEFAULT: 'MMD')}
 
-\item{which.contrast}{(DEFAULT: 1)}
+\item{whichContrast}{index determining which of the set contrast should be used.
+(DEFAULT: 1)}
 
 \item{which.group1}{subset samples from group1 (DEFAULT: NULL)}
 
@@ -27,10 +28,9 @@ and Kolmogorov-Smirnov (KS) implemented.
 \item{diff.method}{which method to use to determine significant peaks
 (DEFAULT: 'MMD.locfit')}
 
-\item{bUsePval}{if TRUE highlight significant peaks according to their
-p-values, else use FDR (DEFAULT: FALSE)}
+\item{bUsePval}{if TRUE p-values instead of FDRs are used (DEFAULT: FALSE)}
 
-\item{th}{significance threshold to highlight peaks (DEFAULT: 0.1)}
+\item{th}{significance threshold for differential called peaks (DEFAULT: 0.1)}
 
 \item{title}{an overall title for the plot (DEFAULT: NULL)}
 
@@ -55,7 +55,7 @@ scatterplot showing distances between peaks
 }
 \examples{
 data("MMD")
-plotDists(MMD, which.contrast=1)
+plotDists(MMD, whichContrast=1)
 
 }
 

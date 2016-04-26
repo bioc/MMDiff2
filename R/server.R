@@ -14,12 +14,12 @@
 #
 # David Kuo
 # March 2016
-server.MMDiff2 <- function(MD, which.contrast=NULL) {
+server.MMDiff2 <- function(MD, whichContrast=1) {
   function(input, output) {
     #out_df <- out_df[complete.cases(out_df), ]
     out_df <- plotDists(MD, shiny_df_opt = TRUE)
     out_df$peakPos <- rownames(out_df)
-    rownames(out_df) <- 1:nrow(out_df)
+    #rownames(out_df) <- 1:nrow(out_df)
 
     # -------------------------------------------------------------------
     # Linked plots (middle and right)
@@ -94,41 +94,33 @@ server.MMDiff2 <- function(MD, which.contrast=NULL) {
     # -------------------------------------------------------------------
     output$peak_plot <- renderPlot({
       if (is.null(click_saved$singleclick)) {
-        selected_peak_id <- 10
+        selected_peak_id <- 'W-27'
       } else {
         selected_peak_id <-
-          as.numeric(row.names(
+          row.names(
             nearPoints(
               out_df,
               click_saved$singleclick,
               xvar = "means",
               yvar = "distance",
               maxpoints = 1
-            )
+
           ))
       }
 
-      if (selected_peak_id > dim(as.data.frame(Dists(MD)))[1]) {
-        selected_peak_id <- floor(selected_peak_id / 2)
-      }
+      #if (selected_peak_id > dim(as.data.frame(Dists(MD)))[1]) {
+      #  selected_peak_id <- selected_peak_id - dim(as.data.frame(Dists(MD)))[1]
+      #}
+      Peak.id = strsplit(selected_peak_id,'-')[[1]][2]
 
-      Peak.id = names(Regions(MD))[selected_peak_id]
-      if (is.null(which.contrast)) {
-        plotPeak(
-          MD = MD,
-          Peak.id = Peak.id,
-          NormMethod = NULL,
-          plot.input = FALSE
-        )
-      } else {
-        plotPeak(
-          MD = MD,
-          Peak.id = Peak.id,
-          NormMethod = NULL,
-          plot.input = FALSE,
-          which.contrast = which.contrast
-        )
-      }
+      plotPeak(
+        MD = MD,
+        Peak.id = Peak.id,
+        NormMethod = NULL,
+        plot.input = FALSE,
+        whichContrast = whichContrast
+      )
+
     })
 
 
@@ -138,30 +130,31 @@ server.MMDiff2 <- function(MD, which.contrast=NULL) {
 
     output$plot_dist_for_peak <- renderPlot({
       if (is.null(click_saved$singleclick)) {
-        selected_peak_id <- 10
+        selected_peak_id <- 'W-27'
       } else {
         selected_peak_id <-
-          as.numeric(row.names(
+          row.names(
             nearPoints(
               out_df,
               click_saved$singleclick,
               xvar = "means",
               yvar = "distance",
               maxpoints = 1
-            )
           ))
       }
 
-      if (selected_peak_id > dim(as.data.frame(Dists(MD)))[1]) {
-        selected_peak_id <- floor(selected_peak_id / 2)
-      }
+      #if (selected_peak_id > dim(as.data.frame(Dists(MD)))[1]) {
+      #  selected_peak_id <- selected_peak_id-dim(as.data.frame(Dists(MD)))[1]
+      #}
       # Log
+      Peak.id = strsplit(selected_peak_id,'-')[[1]][2]
+      #Peak.id = names(Regions(MD))[selected_peak_id]
       plotDISTS4Peak(
         MD,
         Peak.id = Peak.id,
         dist.method = 'MMD',
-        which.contrast = which.contrast,
-        Zoom = FALSE
+        whichContrast = whichContrast,
+        Zoom = TRUE
       )
     })
 
@@ -170,31 +163,24 @@ server.MMDiff2 <- function(MD, which.contrast=NULL) {
     # -------------------------------------------------------------------
     output$ucsc_link <- renderUI({
       if (is.null(click_saved$singleclick)) {
-        selected_peak_id <- 10
-        ucsc_coord <- out_df$peakPos[selected_peak_id]
+        selected_peak_id <- 'W-27'
       } else {
         selected_peak_id <-
-          as.numeric(row.names(
+          row.names(
             nearPoints(
               out_df,
               click_saved$singleclick,
               xvar = "means",
               yvar = "distance",
               maxpoints = 1
-            )
           ))
-        ucsc_coord <- out_df$peakPos[selected_peak_id]
       }
-      if (selected_peak_id > dim(as.data.frame(Dists(MD)))[1]) {
-        selected_peak_id <- floor(selected_peak_id / 2)
-        ucsc_coord <- out_df$peakPos[selected_peak_id]
-      }
-      chrom <- strsplit(ucsc_coord, ":")[[1]][1]
-      left_coord <-
-        strsplit(strsplit(ucsc_coord, ':')[[1]][2], '-')[[1]][1]
-      right_coord <-
-        strsplit(strsplit(ucsc_coord, ':')[[1]][2], '-')[[1]][2]
-
+      Peak.id = strsplit(selected_peak_id,'-')[[1]][2]
+      ii <- match(Peak.id,names(Regions(MD)))
+      ucsc_coord <- Regions(MD)[ii]
+      chrom <- seqnames(ucsc_coord)
+      left_coord <- start(ucsc_coord)
+      right_coord <- end(ucsc_coord)
       if (grepl("hg18", Genome(MD))) {
         org_str <- "human"
         db_str <- "hg18"
@@ -207,10 +193,12 @@ server.MMDiff2 <- function(MD, which.contrast=NULL) {
       } else if (grepl("mm9", Genome(MD))) {
         db_str <- "mm9"
         org_str <- "mouse"
+      } else if (grepl("mm10", Genome(MD))) {
+        db_str <- "mm10"
+        org_str <- "mouse"
       } else {
         db_str <- NULL
       }
-
       if (!is.null(db_str)) {
         peak_link <-
           sprintf(

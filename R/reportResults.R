@@ -1,11 +1,12 @@
-#' reportResults
+#' report results
 #'
-#' retrieve Results of differential binding analysis
+#' retrieve results of differential binding analysis
 #'
 #'
 #' @inheritParams compPvals
 #' @inheritParams plotDists
-#' @param rm.oulier (DEFAULT: TRUE)
+#' @param rm.oulier if TRUE, significant peaks with high
+#' within-group distances are not reported. (DEFAULT: TRUE)
 #' @examples
 #'
 #' data("MMD")
@@ -14,9 +15,9 @@
 #' @export
 
 reportResults <- function(MD, diff.method='MMD.locfit', th=0.1,
-                          which.contrast=1,rm.oulier=TRUE,bUsePval=FALSE){
+                          whichContrast=1,rm.oulier=TRUE,bUsePval=FALSE){
 
-  c <- Contrast(MD)[[which.contrast]]
+  c <- Contrast(MD)[[whichContrast]]
   c.m <- c[[diff.method]]
 
   if (diff.method=='MMD.locfit'){
