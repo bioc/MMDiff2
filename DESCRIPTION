@@ -4,7 +4,7 @@ Description: This package detects statistically significant differences between
     shape differences it uses Kernel methods (Maximum Mean Discrepancy, MMD).
 Type: Package
 Title: Statistical Testing for ChIP-Seq data sets
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person("Gabriele", "Schweikert", role = c("cre", "aut"), email = "gschweik@staffmail.ed.ac.uk"),
     person("David", "Kuo", role = "aut", email = "dkuo@cbio.mskcc.org"))
