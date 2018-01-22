@@ -463,7 +463,7 @@ getReads <- function(Peaks, chrom, bam.file, pairedEnd=FALSE){
   IRanges <- NULL
   rm(list=c(RangesList, IRanges))
 
-  which <- RangesList(IRanges(Peaks[,2], Peaks[,3]))
+  which <- IRangesList(IRanges(Peaks[,2], Peaks[,3]))
   names(which) <- c(chrom)
 
   if (pairedEnd==TRUE){
